@@ -1,13 +1,21 @@
 #ifndef NETWORK_H_INCLUDED
 #define NETWORK_H_INCLUDED
 
+#include "Block.h"
 
-void init_winsock() ;
-void close_winsock() ;
-void receive() ;
-void send() ;
-void be_host() ;
-void be_client() ;
-char* GetLocalIP() ;
+struct Packet{
+
+    Block board[BoardSize_X][BoardSize_Y] ;
+
+} ;
+
+int SC() ;
+int Init_Ws() ;
+void Close_Ws() ;
+int Receive( GameBoard& gb ) ;
+void Send( GameBoard& gb ) ;
+int Host() ;
+int Client() ;
+
 
 #endif // NETWORK_H_INCLUDED

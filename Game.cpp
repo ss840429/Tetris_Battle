@@ -1,83 +1,115 @@
 #include <stdio.h>
 #include <time.h>
+#include <windows.h>
+#include <algorithm>
 #include "Console.h"
 #include "File.h"
 #include "Block.h"
 #include "Color.h"
 #include "Move.h"
 #include "Game.h"
-#include <windows.h>
-#include <algorithm>
+#include "Location.h"
+#include "Network.h"
+#include "Music.h"
+
+void ShowBoard( GameBoard& gb ) ;
+void ShowEBoard( GameBoard& gb ) ;
+void ShowForm() ;
+void ShowNextBlock( Block ) ;
+void ShowHoldBlock( Block ) ;
+void ShowScore( int total_score , int total_line , int combo ) ;
+void EraseLine( GameBoard& , int& , int& , int& ) ;
+bool GameOver( GameBoard& gb ) ;
 
 
-constexpr int level_time = 300 ;                           /* ms -> speed */
-constexpr int Lscore[5] = { 0 , 10 , 50 , 150 , 500 } ;     /* Value of erasing each line */
+constexpr int level_time = 1000 ;                           /* ms -> speed */
+constexpr int max_level_time = 150 ;
+constexpr int Lscore[5] = { 0 , 20 , 100 , 250 , 500 } ;     /* Value of erasing each line */
+Mode mode = Single ;
 
-void Game()
+
+
+void Game(Mode M)
 {
-    Clean();
-    GameBoard board , buffer ;
-    board.Create( BoardSize_X , BoardSize_Y ) , board.Init( true ) ;
-    buffer.Create( 4 , BoardSize_Y ) , buffer.Init( false ) ;
+    Change_Mode( M ) ; mode = M ;
+    if( M == Multi && SC() == 0 ) return ;
+
+    Clean(); StopMusic();
+    GameBoard board , enemy_board ;
+    board.Create( BoardSize_X , BoardSize_Y ) , board.Init() ;
+    enemy_board.Create( BoardSize_X , BoardSize_Y ) , enemy_board.Init() ;
 
     Block Cur , Next , Hold ;
     Cur.Init() , Next.Init() , Hold.Init() ;
     Cur.GainBlock() , Next.GainBlock() ;
 
     int Score = 0 , Line = 0 , Combo = 0 ;
-    int tcounter = 0 ;
+    int tcounter = 0 , netcounter = 0 ;
     bool next , Can_Change = true ;
 
-    ShowForm( &board ) ;
+    ShowForm( ) ;
+    PlayMusic() ;
+    if( M == Multi ) Send(board) , Receive(enemy_board) ;
 
     do
     {
-        LoadToBuffer( &buffer , Cur ) ;
-        if( !MoveBufferToBoard( &buffer , & board) ) break ;
+        LoadToBuffer( board , Cur ) ;
 
         ShowNextBlock( Next ) ;
         ShowHoldBlock( Hold ) ;
-        Showpect( &board , &buffer ) ;
-        ShowBoard( &board ) ;
+        Showpect( board ) ;
         ShowScore( Score , Line , Combo ) ;
+        ShowBoard( board ) ;
 
         tcounter = clock() ;
         next = false ;
 
         while( !next )
         {
+            netcounter ++ ;
+
+            if( M == Multi && !(netcounter%100) )
+            {
+                netcounter = 0 ;
+                Send(board) ;
+                if( Receive( enemy_board ) )
+                {
+                    ShowEBoard( enemy_board ) ;
+                }
+            }
+
             int interact = KeyPressDetect() ;   /* User input */
+
 
             if( interact == Pause )
             {
                 POINT old;
                 GetCursorPos(&old);
-                gotoxy( 27 , 13 ) ;
+                gotoxy( Pause_X , Pause_Y ) ;
                 Drawtext( " ---- || PAUSE ---- " , Red ) ;
                 while( !KeyPressDetect() ) ;
                 gotoxy(old.x,old.y) ;
             }
-            if( interact == Down || clock() - tcounter >= level_time - Line * 4 ) /* down */
+            if( interact == Down || clock() - tcounter >= std::max( level_time - Line*4 , max_level_time )  ) /* down */
             {
                 tcounter = clock() ;   /* reset time for next */
-                next = MoveDown( &board , &buffer) ;
+                next = MoveDown( board ) ;
                 if( next ) delay(100) ;
-                ShowBoard( &board ) ;
+                ShowBoard( board ) ;
+                if( M == Multi ) ShowEBoard( enemy_board ) ;
             }
             if( interact == Space )
             {
-                AllDown( &board , &buffer ) ;
+                AllDown( board ) ;
                 tcounter = clock() ;
                 next = true ;
             }
-            if( interact == Left ) MoveLeft( &board , &buffer ) ;
+            if( interact == Left ) MoveLeft( board ) ;
 
-            if( interact == Right ) MoveRight( &board , &buffer ) ;
+            if( interact == Right ) MoveRight( board ) ;
 
-            if( interact == Up  && Cur.ReturnAtt().shape > 0 && Cur.ReturnAtt().shape < 7 )
-            {
-                Rotate( &board , &buffer) ;
-            }
+            if( interact == Up  && Cur.ReturnAtt().shape > 0 && Cur.ReturnAtt().shape < 7 )  Rotate( board ) ;
+
             if( interact == C && Can_Change )     /* C - Hold */
             {
                 if( Hold.ReturnType() == None )  /* Fisrt Hold */
@@ -85,76 +117,72 @@ void Game()
                     Hold = Cur ;
                     next = true ;
                 }
-                else                             /* Swap Hold with Current */
-                {
-                    std::swap( Hold , Cur ) ;
-                }
+                else    std::swap( Hold , Cur ) ;    /* Swap Hold with Current */
 
-                for( int i = 1 ; i < BoardSize_X - 1 ; i ++ )
-                    for( int j = 1 ; j < BoardSize_Y - 1 ; j ++ )
-                        if( board.Show(i,j).ReturnType() == Shape  )
-                            board.Show(i,j).Init() ;
-
-                buffer.Init(false) ;
-
+                RmShape(board) ;
                 Can_Change = false ;
                 break ;
             }
 
-            Showpect( &board , &buffer ) ;
-            if( interact != 0 ) ShowBoard( &board ) ;   // Refrash
-
+            Showpect( board ) ;
+            if( interact != 0 ) ShowBoard( board ) ;   // Refrash
         }
 
         if( next )
         {
-            EraseLine( &board , &Score , &Line , &Combo ) ;
+            EraseLine( board , Score , Line , Combo ) ;
             Cur = Next , Next.GainBlock() ;
             Can_Change = true ;
         }
     }
-    while( !GameOver(&buffer) ) ;
+    while( !GameOver(board) ) ;
 
-    board.Destroy() , buffer.Destroy() ;
+    StopMusic() ;
+    Close_Ws() ;
+    board.Destroy(), enemy_board.Destroy() ;
     Clean();
-    FileSave( Score ) ;
+    if( mode == Single ) FileSave(Score) ;
 }
 
-void ShowRecord()
+void ShowBoard( GameBoard& gb )
 {
-    PA* data = FileRead() ;
-
-    Clean();
-    Cursorset( "  R A N K\t    P L A Y E R\t          S C O R E                 D A T E     " ) ;
-    for( int i = 0 ; i < log_num ; i ++ )
+    gb.Print( Form_X+2 ,Form_Y+1 );
+}
+void ShowEBoard( GameBoard& gb )
+{
+    gb.Print( Form_X2+2 ,Form_Y2+1 );
+}
+void ShowForm()
+{
+    gotoxy( Form_X+6 , Form_Y-1 ) ;
+    Drawtext( " Y  O  U  R  " , Yellow ) ;
+    if( mode == Multi )
     {
-        if( (data+i)->Score != -1 )
-            printf( "  Number %2d :\t     %10s\t        %9d                 %s\n" , i + 1 , (data+i)->Name , (data+i)->Score , (data+i)->Date ) ;
+        gotoxy( Form_X2+7 , Form_Y2-1 ) ;
+        Drawtext( " R I V A L" , Yellow ) ;
     }
-    if( data->Score == -1 ) printf( "\n\n\n\n\n\n\n\n\n\n\n\t\t\tNo records , Please enjoy the Game~\n" ) ;
-    gotoxy(0,18);
-    printf("                                          \n");     /* Cover previous Screen */
-    Draw( 38 , 23 , "[OK]" , true ) ;
-    free(data);                         /* Free Malloc */
-    while( KeyPressDetect() != Enter ) ;
-
-}
-void ShowBoard( GameBoard* gb )
-{
-    gb->Print(27,3);
-}
-void ShowForm( GameBoard* gb )
-{
-    for( int i = 0 ; i < BoardSize_X ; i ++ ) /* Main Form */
+    for( int i = 0 ; i < BoardSize_X -2 ; i ++ ) /* Main Form */
     {
-        gotoxy( 25 , 2 + i ) ;
-        for( int j = 0 ; j < BoardSize_Y ; j ++ )
-            gb->Show(i,j).Print() ;
+        gotoxy( Form_X , Form_Y + i ) ;
+        for( int j = 0 ; j < BoardSize_Y + 2 ; j ++ )
+            if( i == 0 || i == BoardSize_X-3 || j == 0 || j == BoardSize_Y+1 )
+                DrawBlock(White) ;
+            else
+                printf( "  " ) ;
 
+        if( mode == Multi )
+        {
+            gotoxy( Form_X2 , Form_Y2 + i ) ;
+            for( int j = 0 ; j < BoardSize_Y + 2 ; j ++ )
+                if( i == 0 || i == BoardSize_X-3 || j == 0 || j == BoardSize_Y+1 )
+                    DrawBlock(White) ;
+                else
+                    printf( "  " ) ;
+        }
     }
     for( int i = 0 ; i < 7 ; i ++ )
     {
-        gotoxy( 52 , 2+i ) ;    /* Next Form */
+        gotoxy( Next_X , Next_Y+i ) ;    /* Next Form */
         if( !i )
         {
             Drawtext( " N  E  X  T  " , Yellow ) ;
@@ -171,7 +199,7 @@ void ShowForm( GameBoard* gb )
             DrawBlock( White ) ;
         }
 
-        gotoxy( 10 , 2+i ) ;    /* Hold Form */
+        gotoxy( Hold_X , Hold_Y+i ) ;    /* Hold Form */
         if( !i )
         {
             Drawtext( " H  O  L  D  " , Yellow ) ;
@@ -193,7 +221,7 @@ void ShowNextBlock( Block next )
 {
     for( int i = 0 ; i < 4 ; i ++ )
     {
-        gotoxy( 54 , 4+i ) ;
+        gotoxy( Next_X+2 , Next_Y+2+i ) ;
         for( int j = 0 ; j < 4 ; j ++ )
             if( Bricks[next.ReturnAtt().shape][i*4+j] )
                 next.Print() ;
@@ -207,7 +235,7 @@ void ShowHoldBlock( Block hold )
     {
         for( int i = 0 ; i < 4 ; i ++ )
         {
-            gotoxy( 12 , 4+i ) ;
+            gotoxy( Hold_X+2 , Hold_Y+2+i ) ;
             for( int j = 0 ; j < 4 ; j ++ )
                 if( Bricks[hold.ReturnAtt().shape][i*4+j] )
                     hold.Print() ;
@@ -218,43 +246,47 @@ void ShowHoldBlock( Block hold )
 }
 void ShowScore( int total_score , int total_line , int combo )
 {
-    gotoxy( 52 , 11 ) ;
+    gotoxy( Score_X , Score_Y ) ;
     printf( "Score : %d " , total_score ) ;
-    gotoxy( 52 , 13 ) ;
-    printf( "Cleared Line : %d " , total_line ) ;
-    gotoxy( 52 , 15 ) ;
+    gotoxy( Score_X , Score_Y+2 ) ;
+    printf( "Cleared : %d " , total_line ) ;
+    gotoxy( Score_X , Score_Y+4 ) ;
     printf( "Combo : %d " , combo ) ;
 
 }
-void EraseLine( GameBoard* gb , int* score , int* line , int* combo )
+void EraseLine( GameBoard& gb , int& score , int& line , int& combo )
 {
     int add = 0 , ers [4] ;
     int i , j ;   /* For loop */
 
-    for( i = BoardSize_X-2 ; i > 1 ; i -- )
+    for( i = BoardSize_X-1 ; i > 3 ; i -- )
     {
         int check = 0 ;
-        for( j = 1 ; j < BoardSize_Y - 1 ; j ++ )
+        for( j = 0 ; j < BoardSize_Y ; j ++ )
         {
-            if( gb->Show(i,j).ReturnType() == Lock ) check ++ ;
+            if( gb.Show(i,j).ReturnType() == Lock ) check ++ ;
         }
 
-        if( check == BoardSize_Y - 2 )  ers[add++] = i + add ;
+        if( check == BoardSize_Y )  ers[add++] = i + add ;
     }
     for( int i = 0 ; i < add ; i ++ )
     {
         for( int j = ers[i]-1 ; j > 0 ; j -- )
         {
-            for( int k = 1 ; k < BoardSize_Y - 1 ; k ++ )
+            for( int k = 0 ; k < BoardSize_Y  ; k ++ )
                 MoveBlock( gb , j , k , j+1 , k ) ;
         }
     }
-    *score += Lscore[add]*(1+*combo) ;
-    *line += add ;
-    if( add == 0 ) *combo = 0 ;
-    else *combo += 1 ;
+    score += Lscore[add]*(1+combo) ;
+    line += add ;
+    if( add == 0 ) combo = 0 ;
+    else combo += 1 ;
 }
-bool GameOver( GameBoard* buffer )
+bool GameOver( GameBoard& board )
 {
-    return !buffer->IsEmpty() ;
+    for( int i = 0 ; i < BoardSize_Y ; i ++ )
+        if( board.Show(4,i).ReturnType() == Lock )
+            return true ;
+
+    return false ;
 }

@@ -43,25 +43,18 @@ void GameBoard::Create( int sizex , int sizey )
 
     x = sizex , y = sizey ;
 }
-void GameBoard::Init( bool SetWall )
+void GameBoard::Init(  )
 {
     for( int row = 0 ; row < x ; row ++ )
-    {
         for( int col = 0 ; col < y ; col ++ )
-        {
             board[row][col].Init() ;
-
-            if( SetWall && ( !row || !col || row == x-1 || col == y-1 ) )  // wall set
-                board[row][col].ReturnType() = Wall ;
-        }
-    }
 }
-void GameBoard::Print( int startx , int starty )
+void GameBoard::Print( int startx , int starty  )
 {
-     for( int i = 1 ; i < BoardSize_X -1 ; i ++ )
+     for( int i = 4 ; i < BoardSize_X ; i ++ )      // ignore buffer
     {
-        gotoxy( startx , starty-1 + i ) ;
-        for( int j = 1 ; j < BoardSize_Y -1 ; j ++ )
+        gotoxy( startx , starty+i-4 ) ;
+        for( int j = 0 ; j < BoardSize_Y ; j ++ )
                 board[i][j].Print() ;
     }
 }
@@ -81,7 +74,7 @@ bool GameBoard::IsEmpty()
     int k = 0 ;
     for( int row = 0 ; row < x ; row ++ )
         for( int col = 0 ; col < y ; col ++ )
-            k += ( board[row][col].ReturnType() == Shape ) ;
+            k += ( board[row][col].ReturnType() == Shape || board[row][col].ReturnType() == Lock  ) ;
 
     return !k ;
 }

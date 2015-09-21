@@ -1,7 +1,7 @@
 #ifndef CONSOLE_H_INCLUDED
 #define CONSOLE_H_INCLUDED
 
-enum Key { Enter = 13 , Up = 72 , Down = 80 , Left = 75 , Right = 77 , Space = 32 , C = 99 , Pause = 112 } ;
+enum Key { Enter = 13 , Up = 72 , Down = 80 , Left = 75 , Right = 77 , Space = 32 , C = 99 , Pause = 112 , ESC = 27 } ;
 
 int KeyPressDetect() ;
 void gotoxy( int x , int y ) ;
@@ -15,5 +15,6 @@ void Clean() ;
 void pause() ;
 void delay( int ms ) ;
 int random( int ln , int un ) ;
+void CleanSel() ;
 
 #endif // CONSOLE_H_INCLUDED

@@ -76,6 +76,11 @@ void Clean()  // For windows
     FillConsoleOutputCharacter(Screen_Out, 32, size, scrn, &temp);
     gotoxy(0,0);
 }
+void CleanSel()
+{
+    for( int i = 12 ; i < 25 ; i ++ )
+        Draw( 25 , i , "                             " , 0 ) ;
+}
 void pause()
 {
     system( "pause" ) ;

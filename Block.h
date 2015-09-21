@@ -4,7 +4,7 @@
 #include "Console.h"
 #include <stdio.h>
 
-const int BoardSize_X = 22 , BoardSize_Y = 12 ;  /* Size */
+const int BoardSize_X = 24 , BoardSize_Y = 10 ;  /* Size , extra for buffer */
 const int Chance_trap = 2 ; /* x of 100 */
 
 const int Bricks[9][16] = {
@@ -19,7 +19,7 @@ const int Bricks[9][16] = {
                         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}      // Trap 2
                         ;
 
-enum BlockType { None , Shape , Lock , Wall , Empty } ;
+enum BlockType { None , Shape , Lock , Empty } ;
 
 struct Attribute
 {
@@ -64,14 +64,17 @@ class GameBoard
 
         public:
                 void Create( int sizex , int sizey ) ;
-                void Init( bool SetWall ) ;
+                void Init( ) ;
                 void Destroy() ;
                 bool IsEmpty() ;
                 void Print( int startx , int starty ) ;
                 bool IsValid( int x , int y ) ;
                 Block& Show( int row , int col )
                 {
+                    if( IsValid(row,col) )
                         return board[row][col] ;
+                    else
+                        return board[0][0];
                 }
         private:
                 Block** board ;

@@ -2,13 +2,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "File.h"
 #include "Console.h"
 #include "Color.h"
 
+struct PA{
+
+    char Name[15] ;
+    int Score ;
+    char Date[15] ;
+} ;
+
+void Prod_TXT() ;
+int Encode( int pwd ) ;
+int Decode( int pwd ) ;
+char* GetTime( ) ;
+
 const char* FileName = ".\\Record" ;  /*    Direct Path    */
-int log_num = 15 ;              /* Number of Records */
-int propwd = 17 ;               /* Password  codenum */
+const int log_num = 15 ;              /* Number of Records */
+const int propwd = 17 ;               /* Password  codenum */
 
 PA* FileRead()
 {
@@ -53,6 +64,27 @@ void FileSave( int score )
 
     free( Data ) ;
 }
+
+void ShowRecord()
+{
+    PA* data = FileRead() ;
+
+    Clean();
+    Cursorset( "  R A N K\t    P L A Y E R\t          S C O R E                 D A T E     " ) ;
+    for( int i = 0 ; i < log_num ; i ++ )
+    {
+        if( (data+i)->Score != -1 )
+            printf( "  Number %2d :\t     %10s\t        %9d                 %s\n" , i + 1 , (data+i)->Name , (data+i)->Score , (data+i)->Date ) ;
+    }
+    if( data->Score == -1 ) printf( "\n\n\n\n\n\n\n\n\n\n\n\t\t\tNo records , Please enjoy the Game~\n" ) ;
+    gotoxy(0,18);
+    printf("                                          \n");     /* Cover previous Screen */
+    Draw( 38 , 23 , "[OK]" , true ) ;
+    free(data);                         /* Free Malloc */
+    while( KeyPressDetect() != Enter ) ;
+
+}
+
 void Prod_TXT()
 {
     if( fopen( FileName , "r" )  == NULL )  /* New player , Make a record file */
