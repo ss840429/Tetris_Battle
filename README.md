@@ -1,6 +1,6 @@
 # Tetris_Battle
 
-![shot](./pic.png)
+![shot](https://lh6.googleusercontent.com/E5yi2dETynSe9q10KwRdLXsgnGs4BNA1iH1AwSCjIqnbvOChvNetYWy8VEjx9c9H1UdB1I6izglLXTA=w1896-h821-rw)
 
 ### 操作說明
 
