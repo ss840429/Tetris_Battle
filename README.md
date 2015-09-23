@@ -1,7 +1,8 @@
 # Tetris_Battle
 
+![shot](./pic.png)
 
-操作說明
+### 操作說明
 
       Up   : 旋轉方塊  Left : 往左移動
 
