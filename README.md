@@ -16,11 +16,11 @@
      
 ### Preview
 
-#### Two Players
+###### Two Players
 ![preshot](./pic/preview.jpg)
 
-
-     
+##### Single Player
+![preshot2](./pic/preview2.jpg)
      
 License     
 =====    
