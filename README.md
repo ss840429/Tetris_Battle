@@ -1,6 +1,6 @@
 # Tetris_Battle
 
-![shot](https://lh6.googleusercontent.com/E5yi2dETynSe9q10KwRdLXsgnGs4BNA1iH1AwSCjIqnbvOChvNetYWy8VEjx9c9H1UdB1I6izglLXTA=w1896-h821-rw)
+![shot](https://lh5.googleusercontent.com/gLXjCBhtZ8P-b5JsFneBLoCURG1kS8h5tKbi1w7iFbjS9_9ODu8L0x6l8tByi5Li907u8DqqSgtJlGA=w1896-h821-rw)
 
 ### 操作說明
 
