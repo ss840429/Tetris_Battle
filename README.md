@@ -1,6 +1,6 @@
 # Tetris_Battle
 
-![shot](https://lh5.googleusercontent.com/gLXjCBhtZ8P-b5JsFneBLoCURG1kS8h5tKbi1w7iFbjS9_9ODu8L0x6l8tByi5Li907u8DqqSgtJlGA=w1896-h821-rw)
+![shot](./pic/pic.jpg)
 
 ### 操作說明
 
@@ -16,7 +16,10 @@
      
 ### Preview
 
-![preshot](https://lh5.googleusercontent.com/fKcf1cjG3dy340bvJaA7BoNYvfLcBATdX_ju5uZnPiogaoPH76Uh9xWNRPy1eNoDLAJDzFSAed6ccCw=w1896-h821)
+#### Two Players
+![preshot](./pic/preview.jpg)
+
+
      
      
 License     
