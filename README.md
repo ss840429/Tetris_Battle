@@ -13,6 +13,12 @@
        P   : 暫停遊戲
      
      
+     
+### Preview
+
+![preshot](https://lh5.googleusercontent.com/fKcf1cjG3dy340bvJaA7BoNYvfLcBATdX_ju5uZnPiogaoPH76Uh9xWNRPy1eNoDLAJDzFSAed6ccCw=w1896-h821)
+     
+     
 License     
 =====    
      
