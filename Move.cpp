@@ -23,14 +23,15 @@ void LoadToBuffer( GameBoard& buffer , Block b )
 
     SetSpin_Node( buffer , b.ReturnAtt().shape ) ;
 
-    int k ;
-    do
+    while( !MoveDown( buffer ) )
     {
-        k = 0 ;
-        for( int i = 0 ; i < BoardSize_Y ; i ++ )  k += buffer.Show(4,i).ReturnType() == Shape ;
+        bool k = false ;
+        for( int i = 0 ; i < BoardSize_Y ; i ++ )
+           if( buffer.Show(4,i).ReturnType() == Shape )
+                k = true ;
 
-        if( !k ) MoveDown( buffer ) ;
-    } while(!k) ;
+        if( k ) break ;
+    }
 }
 void MoveBlock( GameBoard& gb , int x , int y , int des_x , int des_y )
 {

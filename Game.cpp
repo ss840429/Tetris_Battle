@@ -54,6 +54,7 @@ void Game(Mode M)
     do
     {
         LoadToBuffer( board , Cur ) ;
+        if( GameOver(board) ) break ;
 
         ShowNextBlock( Next ) ;
         ShowHoldBlock( Hold ) ;
@@ -285,7 +286,7 @@ void EraseLine( GameBoard& gb , int& score , int& line , int& combo )
 bool GameOver( GameBoard& board )
 {
     for( int i = 0 ; i < BoardSize_Y ; i ++ )
-        if( board.Show(4,i).ReturnType() == Lock )
+        if( board.Show(3,i).ReturnType() == Lock )
             return true ;
 
     return false ;
