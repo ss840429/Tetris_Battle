@@ -42,6 +42,7 @@ void Game(Mode M)
     Block Cur , Next , Hold ;
     Cur.Init() , Next.Init() , Hold.Init() ;
     Cur.GainBlock() , Next.GainBlock() ;
+    LoadToBuffer( board , Cur ) ;
 
     int Score = 0 , Line = 0 , Combo = 0 ;
     int tcounter = 0 , netcounter = 0 ;
@@ -53,9 +54,7 @@ void Game(Mode M)
 
     do
     {
-        LoadToBuffer( board , Cur ) ;
-        if( GameOver(board) ) break ;
-
+        
         ShowNextBlock( Next ) ;
         ShowHoldBlock( Hold ) ;
         Showpect( board ) ;
@@ -134,6 +133,7 @@ void Game(Mode M)
             EraseLine( board , Score , Line , Combo ) ;
             Cur = Next , Next.GainBlock() ;
             Can_Change = true ;
+            LoadToBuffer( board , Cur ) ;
         }
     }
     while( !GameOver(board) ) ;
