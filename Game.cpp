@@ -54,7 +54,7 @@ void Game(Mode M)
 
     do
     {
-        
+
         ShowNextBlock( Next ) ;
         ShowHoldBlock( Hold ) ;
         Showpect( board ) ;
@@ -121,6 +121,7 @@ void Game(Mode M)
 
                 RmShape(board) ;
                 Can_Change = false ;
+                if( !next ) LoadToBuffer( board , Cur ) ;
                 break ;
             }
 

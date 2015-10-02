@@ -1,0 +1,92 @@
+# depslib dependency file v1.0
+1442839423 source:c:\users\wlog\desktop\github\tetris_battle\block.cpp
+	"Console.h"
+	"Block.h"
+	<stdlib.h>
+	<stdio.h>
+	"Color.h"
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\console.h
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\block.h
+	"Console.h"
+	<stdio.h>
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\color.h
+
+1442839423 source:c:\users\wlog\desktop\github\tetris_battle\console.cpp
+	<windows.h>
+	<conio.h>
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"Color.h"
+
+1442839423 source:c:\users\wlog\desktop\github\tetris_battle\file.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"Console.h"
+	"Color.h"
+
+1442839424 source:c:\users\wlog\desktop\github\tetris_battle\main.cpp
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"Console.h"
+	"Game.h"
+	"File.h"
+	"Color.h"
+	"Music.h"
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\game.h
+	"Block.h"
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\file.h
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\music.h
+
+1442839423 source:c:\users\wlog\desktop\github\tetris_battle\music.cpp
+	<windows.h>
+	<mmsystem.h>
+
+1442839423 source:c:\users\wlog\desktop\github\tetris_battle\network.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<winsock2.h>
+	"Network.h"
+	"Block.h"
+	"Console.h"
+	"Color.h"
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\network.h
+	"Block.h"
+
+1443795459 source:c:\users\wlog\desktop\github\tetris_battle\game.cpp
+	<stdio.h>
+	<time.h>
+	<windows.h>
+	<algorithm>
+	"Console.h"
+	"File.h"
+	"Block.h"
+	"Color.h"
+	"Move.h"
+	"Game.h"
+	"Location.h"
+	"Network.h"
+	"Music.h"
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\move.h
+	"Block.h"
+
+1442839423 c:\users\wlog\desktop\github\tetris_battle\location.h
+
+1443795459 source:c:\users\wlog\desktop\github\tetris_battle\move.cpp
+	"Move.h"
+	"Block.h"
+	"Console.h"
+	<stdio.h>
+

@@ -131,30 +131,27 @@ void Showpect( GameBoard& gb )
             if( gb.Show(i,j).ReturnType() == Empty )
                 gb.Show(i,j).Init() ;
 
-    int maxdis = 100 , t = 0 ;
-    int i , j ;
+    GameBoard tmp ; tmp.Create(BoardSize_X,BoardSize_Y) ; tmp.Init() ;
 
-    for( i = 0 ; i < BoardSize_Y ; i ++  )  /* Search */
+    for( int i = 0 ; i < BoardSize_X ; i ++ )
+        for( int j = 0 ; j < BoardSize_Y ; j ++ )
+            tmp.Show(i,j) = gb.Show(i,j) ;
+
+    bool f = true ;
+    while( !MoveDown(tmp) && f )
     {
-        t = 0 ;
-        for( j = 0 ; j < BoardSize_X ; j ++ )
-        {
-            if( gb.Show(j,i).ReturnType() == Shape ) t = 0 ;
-            else if( gb.Show(j,i).ReturnType() == Lock )
-            {
-                if( maxdis > t ) maxdis = t ;
-                break ;
-            }
-            else t ++ ;
-        }
-        if( j == BoardSize_X  && maxdis > t ) maxdis = t ;
-
+        f = false ;
+        for( int i = 0 ; i < BoardSize_X ; i ++ )
+            for( int j = 0 ; j < BoardSize_Y ; j ++ )
+                if( tmp.Show(i,j).ReturnType() == Shape )
+                   f = true ;
     }
 
-    for( int i = 0 ; i < BoardSize_X+4 ; i ++  )  /* Paste */
+    for( int i = 0 ; i < BoardSize_X ; i ++  )  /* Paste */
         for( int j = 0 ; j < BoardSize_Y ; j ++ )
-            if( gb.Show(i,j).ReturnType() == Shape && gb.Show(i+maxdis,j).ReturnType() == None  )
-                gb.Show(i+maxdis,j).ReturnType() = Empty ;
+            if( tmp.Show(i,j).ReturnType() == Lock && gb.Show(i,j).ReturnType() == None  )
+                gb.Show(i,j).ReturnType() = Empty ;
+    tmp.Destroy();
 
 }
 void SetSpin_Node( GameBoard& buffer , int shape )
